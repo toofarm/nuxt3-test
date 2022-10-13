@@ -13,6 +13,7 @@ header {
 }
 
 header h1 {
+    font-family: Arial, Helvetica, sans-serif;
     color: green;
     text-transform: uppercase;
 }

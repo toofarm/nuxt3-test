@@ -22,7 +22,7 @@
             We're doing a loading
         </div>
         <ul
-            v-if="state.movies.length > 0"
+            v-if="state.movies.length > 0 && !state.loading"
             >
             <li 
                 v-for="(movie) in state.movies"
@@ -35,6 +35,11 @@
                 </p>
             </li>
         </ul>
+        <div 
+            v-if="state.noResults && !state.loading"
+            class="no-results">
+            No results for that search
+        </div>
     </div>
 </template>
 
@@ -46,22 +51,26 @@ import { API_KEY } from '../lib/constants'
 const state = reactive({ 
 	query: '',
 	movies: [],
-	loading: false 
+	loading: false,
+	noResults: false
 })
 
 const doSearch = async (e: Event) => {
 	e.preventDefault()
-
+	state.noResults = false
 	state.loading = true
-	console.log(state.query)
 
 	const res = 
             await axios.get(`https://imdb-api.com/en/API/SearchMovie/${API_KEY}/${state.query}`)
 
-	console.log(res.data)
-
 	state.loading = false
+    
+	if (res.data.results.length < 1) {
+		state.noResults = true
+	}
+
 	state.movies = res.data.results
+
 }
 </script>
 
@@ -80,5 +89,9 @@ const doSearch = async (e: Event) => {
     .loader {
         padding: 1em;
         margin: 1em;
+    }
+
+    .no-results {
+        padding: 1rem 0;
     }
 </style>
